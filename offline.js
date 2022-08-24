@@ -1,5 +1,5 @@
 ﻿{
-	"version": 1661275910,
+	"version": 1661370605,
 	"fileList": [
 		"data.js",
 		"c2runtime.js",
@@ -24,6 +24,14 @@
 		"images/explosion-sheet0.png",
 		"images/powerup_dinamite-sheet0.png",
 		"images/powerup_fish-sheet0.png",
+		"images/powerup_shield-sheet0.png",
+		"images/shield-sheet0.png",
+		"images/ground2-sheet0.png",
+		"images/background_board_gameover-sheet0.png",
+		"images/rotate_effect-sheet0.png",
+		"images/btn_menu-sheet0.png",
+		"images/btn_retry-sheet0.png",
+		"images/tiledbackground.png",
 		"media/bomb.ogg",
 		"media/button.ogg",
 		"media/dead.ogg",

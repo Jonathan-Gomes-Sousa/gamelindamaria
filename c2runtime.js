@@ -23345,6 +23345,86 @@ cr.behaviors.Platform = function(runtime)
 }());
 ;
 ;
+cr.behaviors.Rotate = function(runtime)
+{
+	this.runtime = runtime;
+};
+(function ()
+{
+	var behaviorProto = cr.behaviors.Rotate.prototype;
+	behaviorProto.Type = function(behavior, objtype)
+	{
+		this.behavior = behavior;
+		this.objtype = objtype;
+		this.runtime = behavior.runtime;
+	};
+	var behtypeProto = behaviorProto.Type.prototype;
+	behtypeProto.onCreate = function()
+	{
+	};
+	behaviorProto.Instance = function(type, inst)
+	{
+		this.type = type;
+		this.behavior = type.behavior;
+		this.inst = inst;				// associated object instance to modify
+		this.runtime = type.runtime;
+	};
+	var behinstProto = behaviorProto.Instance.prototype;
+	behinstProto.onCreate = function()
+	{
+		this.speed = cr.to_radians(this.properties[0]);
+		this.acc = cr.to_radians(this.properties[1]);
+	};
+	behinstProto.saveToJSON = function ()
+	{
+		return {
+			"speed": this.speed,
+			"acc": this.acc
+		};
+	};
+	behinstProto.loadFromJSON = function (o)
+	{
+		this.speed = o["speed"];
+		this.acc = o["acc"];
+	};
+	behinstProto.tick = function ()
+	{
+		var dt = this.runtime.getDt(this.inst);
+		if (dt === 0)
+			return;
+		if (this.acc !== 0)
+			this.speed += this.acc * dt;
+		if (this.speed !== 0)
+		{
+			this.inst.angle = cr.clamp_angle(this.inst.angle + this.speed * dt);
+			this.inst.set_bbox_changed();
+		}
+	};
+	function Cnds() {};
+	behaviorProto.cnds = new Cnds();
+	function Acts() {};
+	Acts.prototype.SetSpeed = function (s)
+	{
+		this.speed = cr.to_radians(s);
+	};
+	Acts.prototype.SetAcceleration = function (a)
+	{
+		this.acc = cr.to_radians(a);
+	};
+	behaviorProto.acts = new Acts();
+	function Exps() {};
+	Exps.prototype.Speed = function (ret)
+	{
+		ret.set_float(cr.to_degrees(this.speed));
+	};
+	Exps.prototype.Acceleration = function (ret)
+	{
+		ret.set_float(cr.to_degrees(this.acc));
+	};
+	behaviorProto.exps = new Exps();
+}());
+;
+;
 cr.behaviors.Sin = function(runtime)
 {
 	this.runtime = runtime;
@@ -23748,9 +23828,9 @@ cr.getObjectRefTable = function () { return [
 	cr.plugins_.Audio,
 	cr.plugins_.Function,
 	cr.plugins_.Touch,
-	cr.plugins_.Text,
 	cr.plugins_.Sprite,
 	cr.plugins_.TiledBg,
+	cr.plugins_.Text,
 	cr.behaviors.Bullet,
 	cr.behaviors.Pin,
 	cr.behaviors.Flash,
@@ -23758,17 +23838,24 @@ cr.getObjectRefTable = function () { return [
 	cr.behaviors.Platform,
 	cr.behaviors.solid,
 	cr.behaviors.Sin,
+	cr.behaviors.Rotate,
 	cr.system_object.prototype.cnds.IsGroupActive,
 	cr.system_object.prototype.cnds.OnLayoutStart,
 	cr.plugins_.Sprite.prototype.acts.SetInstanceVar,
 	cr.system_object.prototype.exps.choose,
 	cr.system_object.prototype.acts.SetVar,
+	cr.behaviors.Pin.prototype.acts.Pin,
+	cr.plugins_.Sprite.prototype.acts.SetVisible,
+	cr.system_object.prototype.acts.SetLayerVisible,
+	cr.system_object.prototype.cnds.CompareVar,
+	cr.behaviors.Sin.prototype.acts.SetActive,
+	cr.plugins_.Audio.prototype.cnds.IsTagPlaying,
+	cr.plugins_.Audio.prototype.acts.Play,
 	cr.behaviors.Bullet.prototype.acts.SetAngleOfMotion,
 	cr.plugins_.TiledBg.prototype.cnds.CompareX,
 	cr.plugins_.TiledBg.prototype.exps.Width,
 	cr.plugins_.TiledBg.prototype.acts.SetX,
 	cr.plugins_.TiledBg.prototype.exps.X,
-	cr.behaviors.Pin.prototype.acts.Pin,
 	cr.plugins_.Sprite.prototype.cnds.PickTopBottom,
 	cr.plugins_.Sprite.prototype.acts.MoveToTop,
 	cr.plugins_.Sprite.prototype.cnds.CompareInstanceVar,
@@ -23777,17 +23864,15 @@ cr.getObjectRefTable = function () { return [
 	cr.plugins_.Sprite.prototype.cnds.OnCollision,
 	cr.system_object.prototype.cnds.Else,
 	cr.plugins_.Touch.prototype.cnds.OnTouchStart,
+	cr.plugins_.Touch.prototype.cnds.IsTouchingObject,
 	cr.behaviors.Platform.prototype.cnds.OnLand,
 	cr.plugins_.Sprite.prototype.acts.Spawn,
 	cr.plugins_.Sprite.prototype.acts.SetAnim,
 	cr.behaviors.Platform.prototype.cnds.OnJump,
-	cr.plugins_.Audio.prototype.acts.Play,
-	cr.system_object.prototype.cnds.TriggerOnce,
 	cr.plugins_.Sprite.prototype.cnds.CompareY,
 	cr.plugins_.Sprite.prototype.exps.Y,
 	cr.system_object.prototype.cnds.Compare,
 	cr.system_object.prototype.exps.viewporttop,
-	cr.system_object.prototype.acts.CreateObject,
 	cr.system_object.prototype.acts.AddVar,
 	cr.plugins_.Text.prototype.acts.SetText,
 	cr.plugins_.Function.prototype.acts.CallFunction,
@@ -23795,14 +23880,25 @@ cr.getObjectRefTable = function () { return [
 	cr.system_object.prototype.cnds.EveryTick,
 	cr.system_object.prototype.acts.Scroll,
 	cr.plugins_.Function.prototype.cnds.OnFunction,
+	cr.system_object.prototype.acts.CreateObject,
 	cr.plugins_.Sprite.prototype.acts.MoveToBottom,
 	cr.plugins_.Sprite.prototype.acts.SetCollisions,
 	cr.behaviors.Platform.prototype.acts.SetIgnoreInput,
 	cr.system_object.prototype.acts.Wait,
 	cr.behaviors.Flash.prototype.cnds.IsFlashing,
+	cr.plugins_.Text.prototype.cnds.CompareInstanceVar,
+	cr.plugins_.Sprite.prototype.cnds.IsVisible,
+	cr.behaviors.Flash.prototype.acts.Flash,
 	cr.plugins_.Sprite.prototype.cnds.IsCollisionEnabled,
 	cr.plugins_.Sprite.prototype.cnds.IsOnScreen,
+	cr.system_object.prototype.cnds.TriggerOnce,
 	cr.plugins_.Sprite.prototype.acts.Destroy,
 	cr.behaviors.Platform.prototype.acts.SetVectorY,
-	cr.behaviors.Flash.prototype.acts.Flash
+	cr.plugins_.Touch.prototype.cnds.OnTouchObject,
+	cr.system_object.prototype.cnds.LayerVisible,
+	cr.plugins_.Sprite.prototype.cnds.CompareFrame,
+	cr.plugins_.Sprite.prototype.acts.SetAnimFrame,
+	cr.plugins_.Audio.prototype.acts.SetSilent,
+	cr.system_object.prototype.acts.SetTimescale,
+	cr.system_object.prototype.acts.RestartLayout
 ];};
