@@ -1,5 +1,5 @@
 ﻿{
-	"version": 1661370605,
+	"version": 1661463332,
 	"fileList": [
 		"data.js",
 		"c2runtime.js",
@@ -32,6 +32,10 @@
 		"images/btn_menu-sheet0.png",
 		"images/btn_retry-sheet0.png",
 		"images/tiledbackground.png",
+		"images/idle_cao-sheet0.png",
+		"images/idle_gato-sheet0.png",
+		"images/btn_play-sheet0.png",
+		"images/logolindamaria-sheet0.png",
 		"media/bomb.ogg",
 		"media/button.ogg",
 		"media/dead.ogg",
